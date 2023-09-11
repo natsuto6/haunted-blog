@@ -29,7 +29,8 @@ class BlogsController < ApplicationController
   end
 
   def update
-    update_params = current_user.premium? ? blog_params : blog_params.except(:random_eyecatch)
+    update_params = blog_params
+    update_params = update_params.merge(params.require(:blog).permit(:random_eyecatch)) if current_user.premium?
 
     if @blog.update(update_params)
       redirect_to blog_url(@blog), notice: 'Blog was successfully updated.'
@@ -53,7 +54,7 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
+    params.require(:blog).permit(:title, :content, :secret)
   end
 
   def authenticate_owner!
